@@ -97,6 +97,11 @@ func (s *Service) RefreshToken(ctx context.Context, refreshToken string) (*sessi
 		return nil, fmt.Errorf("%s: %w", op, err)
 	}
 
+	err = s.sessionRepo.RefreshSession(ctx, refreshToken, newTokens.RefreshToken, s.refreshTokenTTL)
+	if err != nil {
+		return nil, fmt.Errorf("%s: %w", op, err)
+	}
+
 	return newTokens, nil
 }
 
@@ -157,6 +162,11 @@ func (s *Service) authorize(ctx context.Context, authService OAuthService, state
 		s.accessTokenTTL,
 		s.refreshTokenTTL,
 	)
+	if err != nil {
+		return nil, fmt.Errorf("%s: %w", op, err)
+	}
+
+	err = s.sessionRepo.SaveSession(ctx, tokens.RefreshToken, userInfo, s.refreshTokenTTL)
 	if err != nil {
 		return nil, fmt.Errorf("%s: %w", op, err)
 	}

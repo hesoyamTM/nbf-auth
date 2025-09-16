@@ -29,7 +29,7 @@ func NewSessionRepository(ctx context.Context, cfg RedisConfig) *SessionReposito
 func (s *SessionRepository) SaveSession(ctx context.Context, refreshToken string, userInfo *user.User, ttl time.Duration) error {
 	const op = "redis.SaveSession"
 
-	data, err := json.Marshal(userInfo)
+	data, err := json.Marshal(*userInfo)
 	if err != nil {
 		return fmt.Errorf("%s: %w", op, err)
 	}
@@ -63,12 +63,12 @@ func (s *SessionRepository) GetSession(ctx context.Context, refreshToken string)
 		return nil, fmt.Errorf("%s: %w", op, err)
 	}
 
-	var userInfo *user.User
-	if err = json.Unmarshal(data, userInfo); err != nil {
+	var userInfo user.User
+	if err = json.Unmarshal(data, &userInfo); err != nil {
 		return nil, fmt.Errorf("%s: %w", op, err)
 	}
 
-	return userInfo, nil
+	return &userInfo, nil
 }
 
 func (s *SessionRepository) DeleteSession(ctx context.Context, refreshToken string) error {

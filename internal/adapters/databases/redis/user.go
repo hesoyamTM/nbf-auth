@@ -6,7 +6,9 @@ import (
 
 	"github.com/google/uuid"
 	"github.com/hesoyamTM/nbf-auth/internal/domain/user"
+	"github.com/hesoyamTM/nbf-auth/pkg/logger"
 	"github.com/redis/go-redis/v9"
+	"go.uber.org/zap"
 )
 
 type UserRepository struct {
@@ -49,12 +51,19 @@ func (u *UserRepository) UserExist(ctx context.Context, userID string) (bool, er
 func (u *UserRepository) GetUser(ctx context.Context, userID string) (uuid.UUID, error) {
 	const op = "redis.GetUser"
 
-	res, err := u.rdb.Get(ctx, userID).Result()
+	res, err := u.rdb.Get(ctx, userID).Bytes()
 	if err != nil {
 		return uuid.Nil, fmt.Errorf("%s: %w", op, err)
 	}
 
-	uid, err := uuid.Parse(res)
+	log, err := logger.LoggerFromCtx(ctx)
+	if err != nil {
+		return uuid.Nil, fmt.Errorf("%s: %w", op, err)
+	}
+
+	log.Debug("uuid: ", zap.ByteString("uuid", res))
+
+	uid, err := uuid.ParseBytes(res)
 	if err != nil {
 		return uuid.Nil, fmt.Errorf("%s: %w", op, err)
 	}

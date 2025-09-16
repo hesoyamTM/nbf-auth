@@ -16,6 +16,8 @@ import (
 type AuthService interface {
 	GoogleLoginURL(ctx context.Context) (string, error)
 	GoogleAuthorize(ctx context.Context, state, code string) (*session.Tokens, error)
+	RefreshToken(ctx context.Context, refreshToken string) (*session.Tokens, error)
+	Logout(ctx context.Context, refreshToken string) error
 }
 
 type serverAPI struct {
@@ -36,7 +38,18 @@ func (s *serverAPI) Login(ctx context.Context, req *authv1.LoginRequest) (*authv
 }
 
 func (s *serverAPI) Logout(ctx context.Context, req *authv1.LogoutRequest) (*authv1.LogoutResponse, error) {
-	return nil, nil
+	log, err := logger.LoggerFromCtx(ctx)
+	if err != nil {
+		return nil, status.Error(codes.Internal, "Internal error")
+	}
+
+	if err := s.authService.Logout(ctx, req.GetRefreshToken()); err != nil {
+		log.Error("Failed to refresh token", zap.Error(err))
+
+		return nil, status.Error(codes.Internal, "Internal error")
+	}
+
+	return &authv1.LogoutResponse{}, nil
 }
 
 func (s *serverAPI) VerifyPhoneNumber(ctx context.Context, req *authv1.VerifyPhoneNumberRequest) (*authv1.VerifyPhoneNumberResponse, error) {
@@ -44,7 +57,24 @@ func (s *serverAPI) VerifyPhoneNumber(ctx context.Context, req *authv1.VerifyPho
 }
 
 func (s *serverAPI) RefreshToken(ctx context.Context, req *authv1.RefreshTokenRequest) (*authv1.RefreshTokenResponse, error) {
-	return nil, nil
+	log, err := logger.LoggerFromCtx(ctx)
+	if err != nil {
+		return nil, status.Error(codes.Internal, "Internal error")
+	}
+
+	tokens, err := s.authService.RefreshToken(ctx, req.GetRefreshToken())
+	if err != nil {
+		log.Error("Failed to refresh token", zap.Error(err))
+
+		return nil, status.Error(codes.Internal, "Internal error")
+	}
+
+	return &authv1.RefreshTokenResponse{
+		AccessToken:     tokens.AccessToken,
+		RefreshToken:    tokens.RefreshToken,
+		AccessExpireAt:  timestamppb.New(tokens.AccessTokenExpireAt),
+		RefreshExpireAt: timestamppb.New(tokens.RefreshTokenExpireAt),
+	}, nil
 }
 
 func (s *serverAPI) GoogleLoginURL(ctx context.Context, req *authv1.GoogleLoginURLRequest) (*authv1.GoogleLoginURLResponse, error) {
