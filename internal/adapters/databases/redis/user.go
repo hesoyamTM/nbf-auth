@@ -6,9 +6,7 @@ import (
 
 	"github.com/google/uuid"
 	"github.com/hesoyamTM/nbf-auth/internal/domain/user"
-	"github.com/hesoyamTM/nbf-auth/pkg/logger"
 	"github.com/redis/go-redis/v9"
-	"go.uber.org/zap"
 )
 
 type UserRepository struct {
@@ -30,7 +28,12 @@ func NewUserRepository(ctx context.Context, cfg RedisConfig) *UserRepository {
 func (u *UserRepository) SaveUser(ctx context.Context, user *user.User) error {
 	const op = "redis.SaveUser"
 
-	if err := u.rdb.Set(ctx, user.AuthID, user.ID, 0).Err(); err != nil {
+	binaryID, err := user.ID.MarshalBinary()
+	if err != nil {
+		return fmt.Errorf("%s: %w", op, err)
+	}
+
+	if err := u.rdb.Set(ctx, user.AuthID, binaryID, 0).Err(); err != nil {
 		return fmt.Errorf("%s: %w", op, err)
 	}
 
@@ -56,19 +59,17 @@ func (u *UserRepository) GetUser(ctx context.Context, userID string) (uuid.UUID,
 		return uuid.Nil, fmt.Errorf("%s: %w", op, err)
 	}
 
-	log, err := logger.LoggerFromCtx(ctx)
-	if err != nil {
+	// log, err := logger.LoggerFromCtx(ctx)
+	// if err != nil {
+	// 	return uuid.Nil, fmt.Errorf("%s: %w", op, err)
+	// }
+
+	var id uuid.UUID
+	if err := id.UnmarshalBinary(res); err != nil {
 		return uuid.Nil, fmt.Errorf("%s: %w", op, err)
 	}
 
-	log.Debug("uuid: ", zap.ByteString("uuid", res))
-
-	uid, err := uuid.ParseBytes(res)
-	if err != nil {
-		return uuid.Nil, fmt.Errorf("%s: %w", op, err)
-	}
-
-	return uid, nil
+	return id, nil
 }
 
 func (u *UserRepository) DeleteUser(ctx context.Context, userID string) error {
