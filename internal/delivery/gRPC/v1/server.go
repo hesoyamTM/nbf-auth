@@ -16,6 +16,8 @@ import (
 type AuthService interface {
 	GoogleLoginURL(ctx context.Context) (string, error)
 	GoogleAuthorize(ctx context.Context, state, code string) (*session.Tokens, error)
+	YandexLoginURL(ctx context.Context) (string, error)
+	YandexAuthorize(ctx context.Context, state, code string) (*session.Tokens, error)
 	RefreshToken(ctx context.Context, refreshToken string) (*session.Tokens, error)
 	Logout(ctx context.Context, refreshToken string) error
 }
@@ -109,6 +111,45 @@ func (s *serverAPI) GoogleAuthorize(ctx context.Context, req *authv1.GoogleAutho
 	}
 
 	return &authv1.GoogleAuthorizeResponse{
+		AccessToken:     tokens.AccessToken,
+		RefreshToken:    tokens.RefreshToken,
+		AccessExpireAt:  timestamppb.New(tokens.AccessTokenExpireAt),
+		RefreshExpireAt: timestamppb.New(tokens.RefreshTokenExpireAt),
+	}, nil
+}
+
+func (s *serverAPI) YandexLoginURL(ctx context.Context, req *authv1.YandexLoginURLRequest) (*authv1.YandexLoginURLResponse, error) {
+	log, err := logger.LoggerFromCtx(ctx)
+	if err != nil {
+		return nil, status.Error(codes.Internal, "Internal error")
+	}
+
+	url, err := s.authService.YandexLoginURL(ctx)
+	if err != nil {
+		log.Error("Failed to get google login url", zap.Error(err))
+
+		return nil, status.Error(codes.Internal, "Internal error")
+	}
+
+	return &authv1.YandexLoginURLResponse{
+		Url: url,
+	}, nil
+}
+
+func (s *serverAPI) YandexAuthorize(ctx context.Context, req *authv1.YandexAuthorizeRequest) (*authv1.YandexAuthorizeResponse, error) {
+	log, err := logger.LoggerFromCtx(ctx)
+	if err != nil {
+		return nil, status.Error(codes.Internal, "Internal error")
+	}
+
+	tokens, err := s.authService.YandexAuthorize(ctx, req.GetState(), req.GetCode())
+	if err != nil {
+		log.Error("Failed to get google login url", zap.Error(err))
+
+		return nil, status.Error(codes.Internal, "Internal error")
+	}
+
+	return &authv1.YandexAuthorizeResponse{
 		AccessToken:     tokens.AccessToken,
 		RefreshToken:    tokens.RefreshToken,
 		AccessExpireAt:  timestamppb.New(tokens.AccessTokenExpireAt),

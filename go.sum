@@ -35,6 +35,8 @@ github.com/hesoyamTM/nbf-protos v0.0.0-20250915033825-c2c420d959b7 h1:Qo12nGq+yw
 github.com/hesoyamTM/nbf-protos v0.0.0-20250915033825-c2c420d959b7/go.mod h1:ixfBCPF4UQu+DRdmVsHZlvS2w9aiTy5r2neAw+oxHUg=
 github.com/hesoyamTM/nbf-protos v0.0.0-20250915035154-8ff441fba8c1 h1:4MznrmszvoNtZWNoEv5KPXWnoLxwO3x0RyxasqRnpxg=
 github.com/hesoyamTM/nbf-protos v0.0.0-20250915035154-8ff441fba8c1/go.mod h1:ixfBCPF4UQu+DRdmVsHZlvS2w9aiTy5r2neAw+oxHUg=
+github.com/hesoyamTM/nbf-protos v0.0.0-20250918001214-5bb5c62dd930 h1:4SFKfIK9FZWhJ99ZO2uYWIo18mfJXSsgnsoXvTAwmPA=
+github.com/hesoyamTM/nbf-protos v0.0.0-20250918001214-5bb5c62dd930/go.mod h1:ixfBCPF4UQu+DRdmVsHZlvS2w9aiTy5r2neAw+oxHUg=
 github.com/ilyakaznacheev/cleanenv v1.5.0 h1:0VNZXggJE2OYdXE87bfSSwGxeiGt9moSR2lOrsHHvr4=
 github.com/ilyakaznacheev/cleanenv v1.5.0/go.mod h1:a5aDzaJrLCQZsazHol1w8InnDcOX0OColm64SlIi6gk=
 github.com/joho/godotenv v1.5.1 h1:7eLL/+HRGLY0ldzfGMeQkb7vMd0as4CfYvUVzLqw0N0=

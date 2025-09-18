@@ -5,6 +5,7 @@ import (
 
 	"github.com/hesoyamTM/nbf-auth/internal/adapters/databases/redis"
 	"github.com/hesoyamTM/nbf-auth/internal/adapters/oauth2/google"
+	"github.com/hesoyamTM/nbf-auth/internal/adapters/oauth2/yandex"
 )
 
 type Config struct {
@@ -13,6 +14,7 @@ type Config struct {
 	App    APP                     `yaml:"app"`
 	Redis  redis.RedisConfig       `yaml:"redis"`
 	Google google.GoogleAuthConfig `yaml:"google"`
+	Yandex yandex.YandexAuthConfig `yaml:"yandex"`
 }
 
 type APP struct {

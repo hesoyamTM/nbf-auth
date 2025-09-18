@@ -7,6 +7,7 @@ import (
 
 	"github.com/hesoyamTM/nbf-auth/internal/adapters/databases/redis"
 	"github.com/hesoyamTM/nbf-auth/internal/adapters/oauth2/google"
+	"github.com/hesoyamTM/nbf-auth/internal/adapters/oauth2/yandex"
 	"github.com/hesoyamTM/nbf-auth/internal/adapters/userclient"
 	"github.com/hesoyamTM/nbf-auth/internal/app/session"
 	"github.com/hesoyamTM/nbf-auth/internal/config"
@@ -38,6 +39,7 @@ func NewGrpcApp(ctx context.Context, cfg *config.Config) (*GrpcApp, error) {
 
 	userClient := userclient.NewUserClient(ctx)
 	googleAuthService := google.NewGoogleAuth(ctx, cfg.Google)
+	yandexAuthService := yandex.NewYandexAuth(ctx, cfg.Yandex)
 
 	authService, err := session.NewService(
 		ctx,
@@ -47,6 +49,7 @@ func NewGrpcApp(ctx context.Context, cfg *config.Config) (*GrpcApp, error) {
 		stateRepo,
 		userClient,
 		googleAuthService,
+		yandexAuthService,
 	)
 	if err != nil {
 		return nil, fmt.Errorf("%s: %w", op, err)

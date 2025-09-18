@@ -17,7 +17,7 @@ require (
 	github.com/google/uuid v1.6.0 // indirect
 	github.com/googleapis/enterprise-certificate-proxy v0.3.6 // indirect
 	github.com/googleapis/gax-go/v2 v2.15.0 // indirect
-	github.com/hesoyamTM/nbf-protos v0.0.0-20250915035154-8ff441fba8c1 // indirect
+	github.com/hesoyamTM/nbf-protos v0.0.0-20250918001214-5bb5c62dd930 // indirect
 	github.com/ilyakaznacheev/cleanenv v1.5.0 // indirect
 	github.com/joho/godotenv v1.5.1 // indirect
 	github.com/redis/go-redis/v9 v9.14.0 // indirect

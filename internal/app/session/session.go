@@ -48,6 +48,7 @@ type Service struct {
 	stateRepo   StateRepository
 
 	googleAuthService OAuthService
+	yandexAuthService OAuthService
 
 	userService UserService
 
@@ -64,6 +65,7 @@ func NewService(
 	stateRepo StateRepository,
 	userService UserService,
 	googleAuthService OAuthService,
+	yandexAuthService OAuthService,
 ) (*Service, error) {
 	const op = "session.NewService"
 
@@ -77,6 +79,7 @@ func NewService(
 		userRepo,
 		stateRepo,
 		googleAuthService,
+		yandexAuthService,
 		userService,
 		cfg.AccessTokenTTL,
 		cfg.RefreshTokenTTL,
@@ -121,6 +124,14 @@ func (s *Service) GoogleLoginURL(ctx context.Context) (string, error) {
 
 func (s *Service) GoogleAuthorize(ctx context.Context, state, code string) (*session.Tokens, error) {
 	return s.authorize(ctx, s.googleAuthService, state, code)
+}
+
+func (s *Service) YandexLoginURL(ctx context.Context) (string, error) {
+	return s.loginURL(ctx, s.yandexAuthService)
+}
+
+func (s *Service) YandexAuthorize(ctx context.Context, state, code string) (*session.Tokens, error) {
+	return s.authorize(ctx, s.yandexAuthService, state, code)
 }
 
 func (s *Service) authorize(ctx context.Context, authService OAuthService, state, code string) (*session.Tokens, error) {
