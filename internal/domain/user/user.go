@@ -11,12 +11,12 @@ type User struct {
 
 // NewUser return User struct. Id, name and surname are required
 func NewUser(id uuid.UUID, authID, name, surname string) (*User, error) {
-	if name == "" {
-		return nil, ErrEmptyName
-	}
-	if surname == "" {
-		return nil, ErrEmptySurname
-	}
+	// if name == "" {
+	// 	return nil, ErrEmptyName
+	// }
+	// if surname == "" {
+	// 	return nil, ErrEmptySurname
+	// }
 
 	return &User{
 		id,

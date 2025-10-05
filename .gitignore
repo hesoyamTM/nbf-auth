@@ -1,3 +1,5 @@
 .env
 private-key.pem
 public-key.pem
+README.Docker.md
+.dockerignore

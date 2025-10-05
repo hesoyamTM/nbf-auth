@@ -9,5 +9,16 @@ services:
       - redis_data:/data
     environment:
       - REDIS_PASSWORD=1234
+
+  auth:
+    image: hestm/nbf-auth:latest
+    ports:
+      - "60000:60000"
+    volumes:
+      - ./config:/config
+    environment:
+      - CONFIG_PATH=/config/local.yaml
+    env_file: .env
+
 volumes:
   redis_data:

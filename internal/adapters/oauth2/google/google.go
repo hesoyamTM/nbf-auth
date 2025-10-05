@@ -67,7 +67,7 @@ func (g *GoogleAuth) AuthorizeUser(ctx context.Context, code string) (*user.User
 	userInfo, err := user.NewUser(
 		uuid.Nil,
 		googleUserInfo.Id,
-		googleUserInfo.Name,
+		googleUserInfo.GivenName,
 		googleUserInfo.FamilyName,
 	)
 	if err != nil {

@@ -9,6 +9,6 @@ app:
   refresh-token-ttl: 43200m
 
 redis:
-  address: "localhost:6379"
+  address: "redis:6379"
   password: "1234"
   db: 1
