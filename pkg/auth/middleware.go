@@ -58,7 +58,7 @@ func NewAuthMiddleware(cookieAccessTokenName string, authMethods map[string]bool
 			}
 
 			ctx := r.Context()
-			ctx = context.WithValue(ctx, UID, user.ID)
+			ctx = context.WithValue(ctx, UID, user.ID.String())
 			ctx = context.WithValue(ctx, NAME, user.Name)
 			ctx = context.WithValue(ctx, SURNAME, user.Surname)
 			r = r.WithContext(ctx)
