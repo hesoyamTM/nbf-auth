@@ -18,11 +18,11 @@ type Tokens struct {
 	RefreshTokenExpireAt time.Time
 }
 
-// NewTokens reutrn JwtTokens struct
+// NewTokens return JwtTokens struct
 func NewTokens(accessToken, refreshToken string) (*Tokens, error) {
-	if accessToken == "" || refreshToken == "" {
-		return nil, ErrEmptyToken
-	}
+	// if accessToken == "" || refreshToken == "" {
+	// 	return nil, ErrEmptyToken
+	// }
 
 	return &Tokens{
 		accessToken,
@@ -72,7 +72,7 @@ func (t *Tokens) ValidateAccessToken(publicKey *ecdsa.PublicKey) (*user.User, er
 		return nil, fmt.Errorf("%s: %w", op, err)
 	}
 
-	userInfo, err := user.NewUser(userID, claims["name"].(string), claims["surname"].(string), "")
+	userInfo, err := user.NewUser(userID, "", claims["name"].(string), claims["surname"].(string))
 	if err != nil {
 		return nil, fmt.Errorf("%s: %w", op, err)
 	}

@@ -46,7 +46,7 @@ func NewAuthMiddleware(cookieAccessTokenName string, authMethods map[string]bool
 			token, err := session.NewTokens(stringToken, "")
 			if err != nil {
 				l.Error("failed to parse token")
-				http.Error(w, "Failedt to parse token", http.StatusUnauthorized)
+				http.Error(w, "Failed to parse token", http.StatusUnauthorized)
 				return
 			}
 
