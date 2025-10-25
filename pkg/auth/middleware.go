@@ -57,9 +57,11 @@ func NewAuthMiddleware(cookieAccessTokenName string, authMethods map[string]bool
 				return
 			}
 
-			r = r.WithContext(context.WithValue(r.Context(), UID, user.ID))
-			r = r.WithContext(context.WithValue(r.Context(), NAME, user.Name))
-			r = r.WithContext(context.WithValue(r.Context(), SURNAME, user.Surname))
+			ctx := r.Context()
+			ctx = context.WithValue(ctx, UID, user.ID)
+			ctx = context.WithValue(ctx, NAME, user.Name)
+			ctx = context.WithValue(ctx, SURNAME, user.Surname)
+			r = r.WithContext(ctx)
 
 			next.ServeHTTP(w, r)
 		})
