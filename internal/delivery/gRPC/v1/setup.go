@@ -37,7 +37,10 @@ func NewGrpcApp(ctx context.Context, cfg *config.Config) (*GrpcApp, error) {
 	sessionRepo := redis.NewSessionRepository(ctx, cfg.Redis)
 	stateRepo := redis.NewStateRepository(ctx, cfg.Redis)
 
-	userClient := userclient.NewUserClient(ctx)
+	userClient, err := userclient.NewUserClient(ctx, cfg.UserClient.Address)
+	if err != nil {
+		return nil, fmt.Errorf("%s: %w", op, err)
+	}
 	googleAuthService := google.NewGoogleAuth(ctx, cfg.Google)
 	yandexAuthService := yandex.NewYandexAuth(ctx, cfg.Yandex)
 

@@ -12,3 +12,6 @@ redis:
   address: "redis:6379"
   password: "1234"
   db: 1
+
+user-client:
+  address: "localhost:60001"

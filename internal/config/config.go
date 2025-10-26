@@ -6,15 +6,17 @@ import (
 	"github.com/hesoyamTM/nbf-auth/internal/adapters/databases/redis"
 	"github.com/hesoyamTM/nbf-auth/internal/adapters/oauth2/google"
 	"github.com/hesoyamTM/nbf-auth/internal/adapters/oauth2/yandex"
+	"github.com/hesoyamTM/nbf-auth/internal/adapters/userclient"
 )
 
 type Config struct {
-	Env    string                  `yaml:"env" env:"ENV" env-required:"true"`
-	Grpc   GRPC                    `yaml:"grpc"`
-	App    APP                     `yaml:"app"`
-	Redis  redis.RedisConfig       `yaml:"redis"`
-	Google google.GoogleAuthConfig `yaml:"google"`
-	Yandex yandex.YandexAuthConfig `yaml:"yandex"`
+	Env        string                      `yaml:"env" env:"ENV" env-required:"true"`
+	Grpc       GRPC                        `yaml:"grpc"`
+	App        APP                         `yaml:"app"`
+	Redis      redis.RedisConfig           `yaml:"redis"`
+	Google     google.GoogleAuthConfig     `yaml:"google"`
+	Yandex     yandex.YandexAuthConfig     `yaml:"yandex"`
+	UserClient userclient.UserClientConfig `yaml:"user-client"`
 }
 
 type APP struct {
