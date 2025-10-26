@@ -2,6 +2,7 @@ package auth
 
 import (
 	"context"
+	"encoding/base64"
 
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/metadata"
@@ -28,11 +29,14 @@ func SettingMetadataInterceptor() grpc.UnaryClientInterceptor {
 			surname = ""
 		}
 
+		encodedName := base64.URLEncoding.EncodeToString([]byte(name))
+		encodedSurname := base64.URLEncoding.EncodeToString([]byte(surname))
+
 		md := metadata.New(map[string]string{})
 
 		md.Set(UidInterceptor, uid)
-		md.Set(NameInterceptor, name)
-		md.Set(SurnameInterceptor, surname)
+		md.Set(NameInterceptor, encodedName)
+		md.Set(SurnameInterceptor, encodedSurname)
 
 		ctx = metadata.NewOutgoingContext(ctx, md)
 		return invoker(ctx, method, req, reply, cc, opts...)
@@ -49,10 +53,20 @@ func TakingMetadataInterceptor(ctx context.Context, req any, info *grpc.UnarySer
 		ctx = context.WithValue(ctx, UID, uids[0])
 	}
 	if names := md.Get(NameInterceptor); len(names) > 0 {
-		ctx = context.WithValue(ctx, NAME, names[0])
+		decodedName, err := base64.URLEncoding.DecodeString(names[0])
+		if err != nil {
+			return handler(ctx, req)
+		}
+
+		ctx = context.WithValue(ctx, NAME, decodedName)
 	}
 	if surnames := md.Get(SurnameInterceptor); len(surnames) > 0 {
-		ctx = context.WithValue(ctx, SURNAME, surnames[0])
+		decodedSurname, err := base64.URLEncoding.DecodeString(surnames[0])
+		if err != nil {
+			return handler(ctx, req)
+		}
+
+		ctx = context.WithValue(ctx, SURNAME, decodedSurname)
 	}
 
 	return handler(ctx, req)
