@@ -17,7 +17,7 @@ func NewLoggingMiddleware(lctx context.Context) (Middleware, error) {
 
 	return func(next http.Handler) http.Handler {
 		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-			log = log.With(
+			log := log.With(
 				zap.String("remote_addr", r.RemoteAddr),
 				zap.String("method", r.Method),
 				zap.String("uri", r.RequestURI),
