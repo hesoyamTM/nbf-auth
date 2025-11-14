@@ -3,7 +3,7 @@ package logger
 import "errors"
 
 var (
-	ErrLoggerNil   = errors.New("Logger is nil")
-	ErrInvalidEnv  = errors.New("Invalid env param: can only takes values 'dev' or 'prod'")
-	ErrInvalidType = errors.New("Invalid type of logger")
+	ErrLoggerNil   = errors.New("logger is nil")
+	ErrInvalidEnv  = errors.New("invalid env param: can only takes values 'dev' or 'prod'")
+	ErrInvalidType = errors.New("invalid type of logger")
 )
