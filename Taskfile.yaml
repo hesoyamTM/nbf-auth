@@ -1,6 +1,21 @@
 version: "3"
 
+vars:
+  VERSION: '{{.VERSION | default "latest"}}'
+  DOCKERHUB_USER: '{{.DOCKERHUB_USER | default "hestm"}}'
+  IMAGE_NAME: "nbf-auth-service"
+
 tasks:
   run:
     cmds:
       - go run ./cmd/main.go --config="./config/local.yaml"
+
+  build:
+    desc: "Build and push multi-arch image"
+    cmds:
+      - |
+        docker buildx build \
+        --platform linux/amd64,linux/arm64 \
+        -t {{.DOCKERHUB_USER}}/{{.IMAGE_NAME}}:{{.VERSION}} \
+        --push \
+        .

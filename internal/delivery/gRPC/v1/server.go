@@ -20,6 +20,9 @@ type AuthService interface {
 	YandexAuthorize(ctx context.Context, state, code string) (*session.Tokens, error)
 	RefreshToken(ctx context.Context, refreshToken string) (*session.Tokens, error)
 	Logout(ctx context.Context, refreshToken string) error
+	IsUserBlocked(ctx context.Context, userID string) (bool, error)
+	BlockUser(ctx context.Context, userID string) error
+	UnblockUser(ctx context.Context, userID string) error
 }
 
 type serverAPI struct {
@@ -155,4 +158,52 @@ func (s *serverAPI) YandexAuthorize(ctx context.Context, req *authv1.YandexAutho
 		AccessExpireAt:  timestamppb.New(tokens.AccessTokenExpireAt),
 		RefreshExpireAt: timestamppb.New(tokens.RefreshTokenExpireAt),
 	}, nil
+}
+
+func (s *serverAPI) IsUserBlocked(ctx context.Context, req *authv1.IsUserBlockedRequest) (*authv1.IsUserBlockedResponse, error) {
+	log, err := logger.LoggerFromCtx(ctx)
+	if err != nil {
+		return nil, status.Error(codes.Internal, "Internal error")
+	}
+
+	blocked, err := s.authService.IsUserBlocked(ctx, req.GetUserId())
+	if err != nil {
+		log.Error("Failed to check user blocked", zap.Error(err))
+
+		return nil, status.Error(codes.Internal, "Internal error")
+	}
+
+	return &authv1.IsUserBlockedResponse{
+		Blocked: blocked,
+	}, nil
+}
+
+func (s *serverAPI) BlockUser(ctx context.Context, req *authv1.BlockUserRequest) (*authv1.BlockUserResponse, error) {
+	log, err := logger.LoggerFromCtx(ctx)
+	if err != nil {
+		return nil, status.Error(codes.Internal, "Internal error")
+	}
+
+	if err := s.authService.BlockUser(ctx, req.GetUserId()); err != nil {
+		log.Error("Failed to block user", zap.Error(err))
+
+		return nil, status.Error(codes.Internal, "Internal error")
+	}
+
+	return &authv1.BlockUserResponse{}, nil
+}
+
+func (s *serverAPI) UnblockUser(ctx context.Context, req *authv1.BlockUserRequest) (*authv1.BlockUserResponse, error) {
+	log, err := logger.LoggerFromCtx(ctx)
+	if err != nil {
+		return nil, status.Error(codes.Internal, "Internal error")
+	}
+
+	if err := s.authService.UnblockUser(ctx, req.GetUserId()); err != nil {
+		log.Error("Failed to unblock user", zap.Error(err))
+
+		return nil, status.Error(codes.Internal, "Internal error")
+	}
+
+	return &authv1.BlockUserResponse{}, nil
 }

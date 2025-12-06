@@ -7,11 +7,20 @@ import (
 
 	"github.com/hesoyamTM/nbf-auth/internal/domain/session"
 	"github.com/hesoyamTM/nbf-auth/pkg/logger"
+	"go.uber.org/zap"
 )
 
 type (
-	ctxKey     string
-	Middleware func(next http.Handler) http.Handler
+	ctxKey         string
+	Middleware     func(next http.Handler) http.Handler
+	RequestContext struct {
+		Path   string
+		Method string
+	}
+
+	AuthClient interface {
+		IsUserBlocked(ctx context.Context, uid string) (bool, error)
+	}
 )
 
 const (
@@ -20,7 +29,7 @@ const (
 	SURNAME ctxKey = "surname"
 )
 
-func NewAuthMiddleware(cookieAccessTokenName string, authMethods map[string]bool, publicKey *ecdsa.PublicKey) Middleware {
+func NewAuthMiddleware(cookieAccessTokenName string, AuthClient AuthClient, publicKey *ecdsa.PublicKey) Middleware {
 	return func(next http.Handler) http.Handler {
 		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 			l, err := logger.LoggerFromCtx(r.Context())
@@ -29,15 +38,12 @@ func NewAuthMiddleware(cookieAccessTokenName string, authMethods map[string]bool
 				return
 			}
 
-			if !authMethods[r.URL.Path] {
-				next.ServeHTTP(w, r)
-				return
-			}
+			l.Info("Validating access token", zap.String("path", r.URL.Path), zap.String("method", r.Method))
 
 			cookieToken := r.CookiesNamed(cookieAccessTokenName)
 
 			if len(cookieToken) == 0 {
-				l.Error("cookies is empty")
+				l.Error("cookies is empty", zap.String("path", r.URL.Path), zap.String("method", r.Method))
 				http.Error(w, "unauthorized", http.StatusUnauthorized)
 				return
 			}
@@ -45,15 +51,27 @@ func NewAuthMiddleware(cookieAccessTokenName string, authMethods map[string]bool
 			stringToken := cookieToken[0].Value
 			token, err := session.NewTokens(stringToken, "")
 			if err != nil {
-				l.Error("failed to parse token")
+				l.Error("failed to parse token", zap.Error(err), zap.String("path", r.URL.Path), zap.String("method", r.Method))
 				http.Error(w, "Failed to parse token", http.StatusUnauthorized)
 				return
 			}
 
 			user, err := token.ValidateAccessToken(publicKey)
 			if err != nil {
-				l.Error(err.Error())
+				l.Error("failed to validate token", zap.Error(err), zap.String("path", r.URL.Path), zap.String("method", r.Method))
 				http.Error(w, "unauthorized", http.StatusUnauthorized)
+				return
+			}
+
+			isBlocked, err := AuthClient.IsUserBlocked(r.Context(), user.ID.String())
+			if err != nil {
+				l.Error("failed to check if user is blocked", zap.Error(err), zap.String("path", r.URL.Path), zap.String("method", r.Method))
+				http.Error(w, "Failed to check if user is blocked", http.StatusInternalServerError)
+				return
+			}
+			if isBlocked {
+				l.Error("user is blocked", zap.String("path", r.URL.Path), zap.String("method", r.Method))
+				http.Error(w, "user is blocked", http.StatusForbidden)
 				return
 			}
 

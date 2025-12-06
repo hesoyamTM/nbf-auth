@@ -2,6 +2,8 @@ package main
 
 import (
 	"context"
+	"crypto/tls"
+	"net/http"
 	"os"
 	"os/signal"
 	"syscall"
@@ -17,6 +19,11 @@ func main() {
 	ctx, err := logger.SetupLogger(context.Background(), cfg.Env)
 	if err != nil {
 		panic(err)
+	}
+
+	// TODO: remove this when we have a proper certificate
+	http.DefaultTransport.(*http.Transport).TLSClientConfig = &tls.Config{
+		InsecureSkipVerify: true,
 	}
 
 	log, err := logger.LoggerFromCtx(ctx)

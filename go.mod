@@ -5,7 +5,7 @@ go 1.25.0
 require (
 	github.com/golang-jwt/jwt/v4 v4.5.2
 	github.com/google/uuid v1.6.0
-	github.com/hesoyamTM/nbf-protos v0.0.0-20251021235944-9cdf1332b3cc
+	github.com/hesoyamTM/nbf-protos v0.0.0-20251206181518-6e23fd884701
 	github.com/ilyakaznacheev/cleanenv v1.5.0
 	github.com/joho/godotenv v1.5.1
 	github.com/redis/go-redis/v9 v9.14.0

@@ -39,6 +39,10 @@ github.com/googleapis/gax-go/v2 v2.15.0 h1:SyjDc1mGgZU5LncH8gimWo9lW1DtIfPibOG81
 github.com/googleapis/gax-go/v2 v2.15.0/go.mod h1:zVVkkxAQHa1RQpg9z2AUCMnKhi0Qld9rcmyfL1OZhoc=
 github.com/hesoyamTM/nbf-protos v0.0.0-20251021235944-9cdf1332b3cc h1:uQrSYdiCBKoTsTgOiV/YmqvfB2c/L8vt98qOppBpcnw=
 github.com/hesoyamTM/nbf-protos v0.0.0-20251021235944-9cdf1332b3cc/go.mod h1:ixfBCPF4UQu+DRdmVsHZlvS2w9aiTy5r2neAw+oxHUg=
+github.com/hesoyamTM/nbf-protos v0.0.0-20251206181141-9ce5c54ce975 h1:URmQoEQRQ+0B4CpZ9g9RAQwcVWwx14b7JBPvgjm18SY=
+github.com/hesoyamTM/nbf-protos v0.0.0-20251206181141-9ce5c54ce975/go.mod h1:ixfBCPF4UQu+DRdmVsHZlvS2w9aiTy5r2neAw+oxHUg=
+github.com/hesoyamTM/nbf-protos v0.0.0-20251206181518-6e23fd884701 h1:EZb2QdLYC0EHt9VXfIsAkzo76/oFaaw+/xjYQkvIZf4=
+github.com/hesoyamTM/nbf-protos v0.0.0-20251206181518-6e23fd884701/go.mod h1:ixfBCPF4UQu+DRdmVsHZlvS2w9aiTy5r2neAw+oxHUg=
 github.com/ilyakaznacheev/cleanenv v1.5.0 h1:0VNZXggJE2OYdXE87bfSSwGxeiGt9moSR2lOrsHHvr4=
 github.com/ilyakaznacheev/cleanenv v1.5.0/go.mod h1:a5aDzaJrLCQZsazHol1w8InnDcOX0OColm64SlIi6gk=
 github.com/joho/godotenv v1.5.1 h1:7eLL/+HRGLY0ldzfGMeQkb7vMd0as4CfYvUVzLqw0N0=

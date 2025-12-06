@@ -28,6 +28,12 @@ type UserRepository interface {
 	DeleteUser(ctx context.Context, userID string) error
 }
 
+type BlockUserRepository interface {
+	BlockUser(ctx context.Context, userID string) error
+	UnblockUser(ctx context.Context, userID string) error
+	IsUserBlocked(ctx context.Context, userID string) (bool, error)
+}
+
 type StateRepository interface {
 	SaveState(ctx context.Context, state string) error
 	ValidateState(ctx context.Context, state string) error
@@ -43,9 +49,10 @@ type OAuthService interface {
 }
 
 type Service struct {
-	sessionRepo SessionRepository
-	userRepo    UserRepository
-	stateRepo   StateRepository
+	sessionRepo   SessionRepository
+	userRepo      UserRepository
+	stateRepo     StateRepository
+	blockUserRepo BlockUserRepository
 
 	googleAuthService OAuthService
 	yandexAuthService OAuthService
@@ -60,9 +67,12 @@ type Service struct {
 func NewService(
 	ctx context.Context,
 	cfg config.APP,
+
 	sessionRepo SessionRepository,
 	userRepo UserRepository,
 	stateRepo StateRepository,
+	blockUserRepo BlockUserRepository,
+
 	userService UserService,
 	googleAuthService OAuthService,
 	yandexAuthService OAuthService,
@@ -78,9 +88,12 @@ func NewService(
 		sessionRepo,
 		userRepo,
 		stateRepo,
+		blockUserRepo,
+
 		googleAuthService,
 		yandexAuthService,
 		userService,
+
 		cfg.AccessTokenTTL,
 		cfg.RefreshTokenTTL,
 		privateKey,
@@ -195,4 +208,35 @@ func (s *Service) loginURL(ctx context.Context, authService OAuthService) (strin
 	}
 
 	return authService.LoginURL(ctx, state), nil
+}
+
+func (s *Service) IsUserBlocked(ctx context.Context, userID string) (bool, error) {
+	const op = "session.IsUserBlocked"
+
+	ok, err := s.blockUserRepo.IsUserBlocked(ctx, userID)
+	if err != nil {
+		return false, fmt.Errorf("%s: %w", op, err)
+	}
+
+	return ok, nil
+}
+
+func (s *Service) BlockUser(ctx context.Context, userID string) error {
+	const op = "session.BlockUser"
+
+	if err := s.blockUserRepo.BlockUser(ctx, userID); err != nil {
+		return fmt.Errorf("%s: %w", op, err)
+	}
+
+	return nil
+}
+
+func (s *Service) UnblockUser(ctx context.Context, userID string) error {
+	const op = "session.UnblockUser"
+
+	if err := s.blockUserRepo.UnblockUser(ctx, userID); err != nil {
+		return fmt.Errorf("%s: %w", op, err)
+	}
+
+	return nil
 }

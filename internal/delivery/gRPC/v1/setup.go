@@ -36,6 +36,7 @@ func NewGrpcApp(ctx context.Context, cfg *config.Config) (*GrpcApp, error) {
 	userRepo := redis.NewUserRepository(ctx, cfg.Redis)
 	sessionRepo := redis.NewSessionRepository(ctx, cfg.Redis)
 	stateRepo := redis.NewStateRepository(ctx, cfg.Redis)
+	blockUserRepo := redis.NewBlockUserRepository(ctx, cfg.Redis)
 
 	userClient, err := userclient.NewUserClient(ctx, cfg.UserClient.Address)
 	if err != nil {
@@ -47,9 +48,12 @@ func NewGrpcApp(ctx context.Context, cfg *config.Config) (*GrpcApp, error) {
 	authService, err := session.NewService(
 		ctx,
 		cfg.App,
+
 		sessionRepo,
 		userRepo,
 		stateRepo,
+		blockUserRepo,
+
 		userClient,
 		googleAuthService,
 		yandexAuthService,
