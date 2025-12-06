@@ -108,6 +108,16 @@ func (s *Service) RefreshToken(ctx context.Context, refreshToken string) (*sessi
 		return nil, fmt.Errorf("%s: %w", op, err)
 	}
 
+	blocked, err := s.blockUserRepo.IsUserBlocked(ctx, userInfo.ID.String())
+	if err != nil {
+		return nil, fmt.Errorf("%s: %w", op, err)
+	}
+	if blocked {
+		s.sessionRepo.DeleteSession(ctx, refreshToken)
+
+		return nil, fmt.Errorf("%s: user is blocked", op)
+	}
+
 	newTokens, err := session.GenerateTokens(userInfo, s.privateKey, s.accessTokenTTL, s.refreshTokenTTL)
 	if err != nil {
 		return nil, fmt.Errorf("%s: %w", op, err)

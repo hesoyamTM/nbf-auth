@@ -4,6 +4,7 @@ import (
 	"context"
 	"crypto/ecdsa"
 	"net/http"
+	"time"
 
 	"github.com/hesoyamTM/nbf-auth/internal/domain/session"
 	"github.com/hesoyamTM/nbf-auth/pkg/logger"
@@ -71,6 +72,16 @@ func NewAuthMiddleware(cookieAccessTokenName string, AuthClient AuthClient, publ
 			}
 			if isBlocked {
 				l.Error("user is blocked", zap.String("path", r.URL.Path), zap.String("method", r.Method))
+
+				http.SetCookie(w, &http.Cookie{
+					Name:     cookieAccessTokenName,
+					Value:    "",
+					Path:     "/",
+					Expires:  time.Now().Add(-1 * time.Hour),
+					HttpOnly: true,
+					Secure:   true,
+				})
+
 				http.Error(w, "user is blocked", http.StatusForbidden)
 				return
 			}

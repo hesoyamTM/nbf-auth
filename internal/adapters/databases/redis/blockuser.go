@@ -7,7 +7,7 @@ import (
 	"github.com/redis/go-redis/v9"
 )
 
-const BloomFilterName = "bloom:blocked_users"
+const BloomFilterName = "Cuckoo:blocked_users"
 
 type BlockUserRepository struct {
 	rdb *redis.Client
@@ -28,7 +28,7 @@ func NewBlockUserRepository(ctx context.Context, cfg RedisConfig) *BlockUserRepo
 func (s *BlockUserRepository) BlockUser(ctx context.Context, userID string) error {
 	const op = "redis.BlockUser"
 
-	added, err := s.rdb.Do(ctx, "BF.ADD", BloomFilterName, userID).Bool()
+	added, err := s.rdb.Do(ctx, "CF.ADD", BloomFilterName, userID).Bool()
 	if err != nil {
 		return fmt.Errorf("%s: %w", op, err)
 	}
@@ -43,7 +43,7 @@ func (s *BlockUserRepository) BlockUser(ctx context.Context, userID string) erro
 func (s *BlockUserRepository) UnblockUser(ctx context.Context, userID string) error {
 	const op = "redis.UnblockUser"
 
-	removed, err := s.rdb.Do(ctx, "BF.REMOVE", BloomFilterName, userID).Bool()
+	removed, err := s.rdb.Do(ctx, "CF.DEL", BloomFilterName, userID).Bool()
 	if err != nil {
 		return fmt.Errorf("%s: %w", op, err)
 	}
@@ -58,7 +58,7 @@ func (s *BlockUserRepository) UnblockUser(ctx context.Context, userID string) er
 func (s *BlockUserRepository) IsUserBlocked(ctx context.Context, userID string) (bool, error) {
 	const op = "redis.IsUserBlocked"
 
-	exists, err := s.rdb.Do(ctx, "BF.EXISTS", BloomFilterName, userID).Bool()
+	exists, err := s.rdb.Do(ctx, "CF.EXISTS", BloomFilterName, userID).Bool()
 	if err != nil {
 		return false, fmt.Errorf("%s: %w", op, err)
 	}
