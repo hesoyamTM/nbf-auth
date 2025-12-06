@@ -188,6 +188,14 @@ func (s *Service) authorize(ctx context.Context, authService OAuthService, state
 		if err != nil {
 			return nil, fmt.Errorf("%s: %w", op, err)
 		}
+
+		blocked, err := s.blockUserRepo.IsUserBlocked(ctx, userInfo.ID.String())
+		if err != nil {
+			return nil, fmt.Errorf("%s: %w", op, err)
+		}
+		if blocked {
+			return nil, fmt.Errorf("%s: user is blocked", op)
+		}
 	}
 
 	tokens, err := session.GenerateTokens(
